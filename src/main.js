@@ -39,15 +39,47 @@ mobileLinks.forEach(link => {
 
 const pricingModal = document.getElementById('pricingModal');
 const bookingModal = document.getElementById('bookingModal');
-const bookingSteps = document.querySelectorAll('.booking-step');
 const bookingState = { plan: null, date: null, time: null, currentViewDate: new Date() };
 
-const showStep = (id) => { bookingSteps.forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+// --- THE NEW GSAP SMOOTH STEP TRANSITION ---
+const showStep = (id) => { 
+    const currentStep = document.querySelector('.booking-step.active');
+    const nextStep = document.getElementById(id);
+
+    if (currentStep === nextStep) return;
+
+    if (currentStep) {
+        // Smoothly fade out the old step
+        gsap.to(currentStep, {
+            opacity: 0, x: -20, duration: 0.2, ease: "power2.in",
+            onComplete: () => {
+                currentStep.classList.remove('active');
+                currentStep.style.transform = ''; // reset position
+                
+                // Fade in the new step
+                nextStep.classList.add('active');
+                gsap.fromTo(nextStep, 
+                    { opacity: 0, x: 20 }, 
+                    { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" }
+                );
+            }
+        });
+    } else {
+        // Initial load of the first step
+        nextStep.classList.add('active');
+        gsap.fromTo(nextStep, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+    }
+};
 
 document.getElementById('openModalBtn').onclick = () => pricingModal.classList.add('active');
 document.getElementById('startApplicationBtn').onclick = () => pricingModal.classList.add('active');
 document.getElementById('closePricingBtn').onclick = () => pricingModal.classList.remove('active');
-document.getElementById('closeModalBtn').onclick = () => bookingModal.classList.remove('active');
+
+// Reset booking flow when closing the modal
+document.getElementById('closeModalBtn').onclick = () => {
+    bookingModal.classList.remove('active');
+    setTimeout(() => showStep('step-1'), 400); // reset after fade out
+};
 
 // Open Pricing from either Desktop or Mobile Nav
 document.querySelectorAll('.openPricingBtn').forEach(btn => {
@@ -57,6 +89,7 @@ document.querySelectorAll('.openPricingBtn').forEach(btn => {
     };
 });
 
+// Select Plan -> Smoothly Transition to Calendar
 document.querySelectorAll('.select-plan-btn').forEach(btn => {
     btn.onclick = () => {
         bookingState.plan = btn.dataset.plan;
@@ -87,15 +120,28 @@ function renderTimeSlots() {
         container.appendChild(slot);
     });
 }
+
+document.getElementById('prevMonth').onclick = () => { bookingState.currentViewDate.setMonth(bookingState.currentViewDate.getMonth() - 1); renderCalendar(); };
+document.getElementById('nextMonth').onclick = () => { bookingState.currentViewDate.setMonth(bookingState.currentViewDate.getMonth() + 1); renderCalendar(); };
 document.getElementById('backToStep1').onclick = () => showStep('step-1');
 document.getElementById('backToStep2').onclick = () => showStep('step-2');
 document.getElementById('confirmBookingBtn').onclick = () => showStep('step-success');
-document.getElementById('closeSuccessBtn').onclick = () => bookingModal.classList.remove('active');
+document.getElementById('closeSuccessBtn').onclick = () => {
+    bookingModal.classList.remove('active');
+    setTimeout(() => showStep('step-1'), 400); // reset after fade out
+};
 
+// Smooth Lightbox
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.getElementById('lightbox-img');
-document.querySelectorAll('.gallery-item img').forEach(img => { img.onclick = () => { lightbox.style.display = 'flex'; lightboxImg.src = img.src; }; });
-document.querySelector('.close-lightbox').onclick = () => lightbox.style.display = 'none';
+document.querySelectorAll('.gallery-item img').forEach(img => { 
+    img.onclick = () => { 
+        lightbox.classList.add('active'); // Changed from display block
+        lightboxImg.src = img.src; 
+    }; 
+});
+document.querySelector('.close-lightbox').onclick = () => lightbox.classList.remove('active');
+
 
 // ==========================================
 // 2. 3D LOGIC 
