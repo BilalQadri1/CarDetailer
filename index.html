@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDetail | Premium Automotive Restoration</title>
+    <meta name="description" content="LuxeDetail is a boutique automotive detailing facility offering premium paint correction, ceramic coatings, and bespoke restoration.">
+    
+    <link rel="preload" as="image" href="./poster.webp">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+    <div id="poster-bg"></div>
+
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="logo">LUXE<span>DETAIL</span></div>
+            <div class="loader-bar-container">
+                <div id="loader-bar"></div>
+            </div>
+            <p>INITIALIZING STUDIO...</p>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+    
+    <canvas id="webgl-canvas"></canvas>
+
+    <nav class="navbar">
+        <div class="logo">LUXE<span>DETAIL</span></div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#" id="openPricingBtn">Pricing</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="cta-btn nav-btn" id="openModalBtn">Book Appointment</button>
+    </nav>
+
+    <div class="modal-overlay" id="pricingModal">
+        <div class="modal-content full-screen glassmorphism">
+            <span class="close-btn" id="closePricingBtn">&times;</span>
+            <h2>Select Your Detail Tier</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Essential Polish</h3>
+                    <h2>$150</h2>
+                    <ul>
+                        <li><span class="bullet">•</span> Signature Decontamination Wash</li>
+                        <li><span class="bullet">•</span> Single-Stage Machine Gloss Polish</li>
+                        <li><span class="bullet">•</span> Premium Carnauba Wax Protection</li>
+                        <li><span class="bullet">•</span> Express Interior Refresh</li>
+                    </ul>
+                    <button class="cta-btn full-width select-plan-btn" data-plan="Essential">Select Plan</button>
+                </div>
+                <div class="pricing-card popular">
+                    <span class="badge">Most Popular</span>
+                    <h3>Executive Detail</h3>
+                    <h2>$250</h2>
+                    <ul>
+                        <li><span class="bullet">•</span> Basic + Clay Bar Treatment</li>
+                        <li><span class="bullet">•</span> Multi-Stage Paint Sealer Application</li>
+                        <li><span class="bullet">•</span> Full Interior Deep Clean</li>
+                        <li><span class="bullet">•</span> Engine Bay Detail</li>
+                    </ul>
+                    <button class="cta-btn full-width select-plan-btn" data-plan="Executive">Select Plan</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Ultimate Armor</h3>
+                    <h2>$400</h2>
+                    <ul>
+                        <li><span class="bullet">•</span> Mid + Ceramic Coating (1yr)</li>
+                        <li><span class="bullet">•</span> Wheels-Off Barrel Deep Clean</li>
+                        <li><span class="bullet">•</span> Full Fabric & Leather Protectant</li>
+                        <li><span class="bullet">•</span> Glass Hydrophobic Coating</li>
+                    </ul>
+                    <button class="cta-btn full-width select-plan-btn" data-plan="Ultimate">Select Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="bookingModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <div id="step-1" class="booking-step active">
+                <h2>Select a Date</h2>
+                <div class="calendar-header">
+                    <button id="prevMonth">&lt;</button>
+                    <h3 id="currentMonthYear"></h3>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+            <div id="step-2" class="booking-step">
+                <h2>Select a Time</h2>
+                <p id="selectedDateDisplay" style="color: var(--gold); margin-bottom: 1rem;"></p>
+                <div class="time-slots" id="timeSlots"></div>
+                <button class="back-btn" id="backToStep1">Back</button>
+            </div>
+            <div id="step-3" class="booking-step">
+                <h2>Confirm Booking</h2>
+                <p id="finalSelectionDisplay" style="margin-bottom: 1.5rem;"></p>
+                <input type="email" id="userEmail" placeholder="Enter your email" required>
+                <button class="cta-btn full-width" id="confirmBookingBtn">Confirm Appointment</button>
+                <button class="back-btn" id="backToStep2">Back</button>
+            </div>
+            <div id="step-success" class="booking-step">
+                <h2 style="color: var(--gold);">Confirmed</h2>
+                <p>Your master detailer has been notified.</p>
+                <button class="cta-btn full-width" id="closeSuccessBtn">Return to Studio</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightbox" class="lightbox-overlay">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img" src="" alt="Full view">
+    </div>
+
+    <main class="scroll-content">
+        <section class="step" id="hero">
+            <div class="text-card left reveal">
+                <h1>Automotive<br>Excellence.</h1>
+                <p>The pinnacle of restoration and protection. Experience a new standard of automotive care.</p>
+            </div>
+        </section>
+
+        <section class="step" id="about">
+            <div class="text-card right reveal">
+                <h2>The Studio</h2>
+                <p>A boutique detailing facility dedicated to the art of vehicle preservation. Utilizing state-of-the-art technology, we transform and protect your investment.</p>
+            </div>
+        </section>
+        
+        <section class="step" id="services">
+            <div class="text-card left reveal">
+                <h2>Signature Wash</h2>
+                <p>Meticulous scratch-free decontamination using pH-neutral chemistry and surgical precision.</p>
+            </div>
+        </section>
+
+        <section class="step" id="contact">
+            <div class="text-card center reveal">
+                <h2>Elevate Your Vehicle</h2>
+                <p>Consultations are by appointment only.</p>
+                <br>
+                <button class="cta-btn full-width" id="startApplicationBtn">Start Application</button>
+            </div>
+        </section>
+
+        <section class="step" id="gallery">
+            <div class="gallery-container reveal">
+                <div class="gallery-header">
+                    <span class="section-tag">Our Portfolio</span>
+                    <h2>Recent Commissions</h2>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item"><img src="./gallery/car1.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                    <div class="gallery-item"><img src="./gallery/car2.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                    <div class="gallery-item"><img src="./gallery/car3.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                    <div class="gallery-item"><img src="./gallery/car4.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                    <div class="gallery-item"><img src="./gallery/car5.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                    <div class="gallery-item"><img src="./gallery/car6.jpg" alt="Luxury Car Detail" loading="lazy"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
