@@ -7,6 +7,7 @@
     <meta name="description" content="LuxeDetail is a boutique automotive detailing facility offering premium paint correction, ceramic coatings, and bespoke restoration.">
     
     <link rel="preload" as="image" href="./poster.webp">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
@@ -27,19 +28,39 @@
     </div>
 
     <div class="vignette"></div>
+    
     <canvas id="webgl-canvas"></canvas>
 
     <nav class="navbar">
         <div class="logo">LUXE<span>DETAIL</span></div>
-        <ul class="nav-links">
+        
+        <ul class="nav-links desktop-only">
             <li><a href="#about">About</a></li>
-            <li><a href="#" id="openPricingBtn">Pricing</a></li>
+            <li><a href="#" class="openPricingBtn">Pricing</a></li>
             <li><a href="#services">Services</a></li>
             <li><a href="#gallery">Gallery</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <button class="cta-btn nav-btn" id="openModalBtn">Book Appointment</button>
+
+        <div class="nav-actions">
+            <button class="cta-btn nav-btn" id="openModalBtn">Book</button>
+            <div class="hamburger" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
     </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-links">
+            <li><a href="#about" class="mobile-close-link">About</a></li>
+            <li><a href="#" class="openPricingBtn mobile-close-link">Pricing</a></li>
+            <li><a href="#services" class="mobile-close-link">Services</a></li>
+            <li><a href="#gallery" class="mobile-close-link">Gallery</a></li>
+            <li><a href="#contact" class="mobile-close-link">Contact</a></li>
+        </ul>
+    </div>
 
     <div class="modal-overlay" id="pricingModal">
         <div class="modal-content full-screen glassmorphism">

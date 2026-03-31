@@ -10,8 +10,7 @@ body { background-color: #000; color: #fff; overflow-x: hidden; }
 /* THE POSTER STYLING */
 #poster-bg {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-image: url('./poster.webp');
-    background-size: cover; background-position: center; background-repeat: no-repeat;
+    background-image: url('./poster.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;
     z-index: -1; transition: opacity 1.5s ease-in-out;
 }
 
@@ -35,14 +34,36 @@ body { background-color: #000; color: #fff; overflow-x: hidden; }
 
 /* Navigation */
 .navbar { position: fixed; top: 0; width: 100%; padding: 2.5rem 5%; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-.logo { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 6px; }
+.logo { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 6px; position: relative; z-index: 101;}
 .logo span { color: var(--gold); }
 .nav-links { display: flex; list-style: none; gap: 3rem; }
 .nav-links a { text-decoration: none; color: #666; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 4px; transition: 0.4s; }
 .nav-links a:hover { color: #fff; }
+.nav-actions { display: flex; align-items: center; gap: 1.5rem; z-index: 101;}
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.hamburger span { width: 25px; height: 2px; background: #fff; transition: 0.3s; }
+.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--gold); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
 
-/* Content Cards */
-.step { height: 100vh; display: flex; align-items: center; padding: 0 10%; position: relative; z-index: 2; }
+/* Mobile Menu Overlay */
+.mobile-menu {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: #050505; z-index: 99; display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: 0.4s ease-in-out;
+}
+.mobile-menu.active { opacity: 1; pointer-events: all; }
+.mobile-links { list-style: none; text-align: center; }
+.mobile-links li { margin: 2rem 0; }
+.mobile-links a { text-decoration: none; color: #fff; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 4px; transition: 0.3s;}
+.mobile-links a:hover { color: var(--gold); }
+
+/* Content Cards (FIXED FOR OVERLAPPING) */
+.step { 
+    /* Changed from fixed 100vh to min-height Dynamic Viewport Height */
+    min-height: 100dvh; height: auto; 
+    display: flex; align-items: center; padding: 120px 10%; position: relative; z-index: 2; 
+}
 .text-card { 
     background: var(--glass); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); 
     padding: 3.5rem; width: 100%; max-width: 440px; border: 1px solid var(--border); 
@@ -100,14 +121,18 @@ input { width: 100%; padding: 1.2rem; background: #111; border: 1px solid #333; 
 /* =========================================
    MOBILE RESPONSIVE RULES
    ========================================= */
-@media (max-width: 768px) {
-    /* Navbar: Hide links, shrink padding */
+@media (max-width: 900px) {
+    /* Navbar & Hamburger */
     .navbar { padding: 1.5rem 5%; }
-    .nav-links { display: none; } 
-    .nav-btn { padding: 0.8rem 1.5rem; font-size: 0.6rem; }
+    .desktop-only { display: none; } 
+    .hamburger { display: flex; }
+    .nav-btn { padding: 0.8rem 1.2rem; font-size: 0.6rem; }
 
-    /* Cards: Make full width, center them, push to bottom of screen */
-    .step { padding: 0 5%; align-items: flex-end; padding-bottom: 15vh; }
+    /* Layout & Cards (Fixes bottom overlap) */
+    .step { 
+        padding: 100px 5% 50px 5%; /* Gives breathing room so text doesn't hit bottom */
+        align-items: flex-end; 
+    }
     .text-card { 
         max-width: 100%; 
         padding: 2rem; 
@@ -115,23 +140,19 @@ input { width: 100%; padding: 1.2rem; background: #111; border: 1px solid #333; 
         text-align: left !important; 
     }
     
-    /* Typography: Shrink headers */
+    /* Typography */
     h1 { font-size: 2.2rem; }
     h2 { font-size: 1.3rem; margin-bottom: 1rem; }
-    p { font-size: 0.8rem; line-height: 2; }
+    p { font-size: 0.8rem; line-height: 1.8; }
 
-    /* Modals: Fix overflow and padding */
-    .modal-overlay { align-items: flex-start; }
+    /* Modals */
     .modal-content { padding: 2.5rem 1.5rem; width: 95%; margin-top: 2rem; }
     .modal-content.full-screen { padding: 3rem 1.5rem; }
     .close-btn { top: 0.5rem; right: 1rem; font-size: 2rem; }
 
-    /* Pricing: Stack columns */
-    .pricing-grid { grid-template-columns: 1fr; gap: 15px; margin-top: 1.5rem; }
+    /* Pricing & Gallery */
+    .pricing-grid, .gallery-grid { grid-template-columns: 1fr; gap: 15px; margin-top: 1.5rem; }
     .pricing-card { padding: 1.5rem; }
     .pricing-card.popular { transform: scale(1); border-color: var(--gold); }
     .pricing-card h2 { font-size: 2rem; margin-bottom: 1rem; }
-
-    /* Gallery: 1 column on phones */
-    .gallery-grid { grid-template-columns: 1fr; }
 }

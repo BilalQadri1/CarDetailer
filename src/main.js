@@ -12,11 +12,30 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 gsap.registerPlugin(ScrollTrigger);
 
 // ==========================================
-// 1. UI & MODAL LOGIC 
+// 1. UI, MODAL & MOBILE MENU LOGIC
 // ==========================================
 const loadingScreen = document.getElementById('loading-screen');
 const loaderBar = document.getElementById('loader-bar');
 const posterImage = document.getElementById('poster-bg'); 
+
+// Mobile Menu Variables
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileLinks = document.querySelectorAll('.mobile-close-link');
+
+// Toggle Hamburger Menu
+hamburgerBtn.addEventListener('click', () => {
+    hamburgerBtn.classList.toggle('active');
+    mobileMenu.classList.toggle('active');
+});
+
+// Close Mobile Menu when a link is clicked
+mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('active');
+        mobileMenu.classList.remove('active');
+    });
+});
 
 const pricingModal = document.getElementById('pricingModal');
 const bookingModal = document.getElementById('bookingModal');
@@ -24,11 +43,19 @@ const bookingSteps = document.querySelectorAll('.booking-step');
 const bookingState = { plan: null, date: null, time: null, currentViewDate: new Date() };
 
 const showStep = (id) => { bookingSteps.forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+
 document.getElementById('openModalBtn').onclick = () => pricingModal.classList.add('active');
-document.getElementById('openPricingBtn').onclick = (e) => { e.preventDefault(); pricingModal.classList.add('active'); };
 document.getElementById('startApplicationBtn').onclick = () => pricingModal.classList.add('active');
 document.getElementById('closePricingBtn').onclick = () => pricingModal.classList.remove('active');
 document.getElementById('closeModalBtn').onclick = () => bookingModal.classList.remove('active');
+
+// Open Pricing from either Desktop or Mobile Nav
+document.querySelectorAll('.openPricingBtn').forEach(btn => {
+    btn.onclick = (e) => { 
+        e.preventDefault(); 
+        pricingModal.classList.add('active'); 
+    };
+});
 
 document.querySelectorAll('.select-plan-btn').forEach(btn => {
     btn.onclick = () => {
@@ -123,11 +150,9 @@ function init3D() {
         const scale = 3 / new THREE.Box3().setFromObject(carModel).getSize(new THREE.Vector3()).x;
         carModel.scale.set(scale, scale, scale); carModel.position.y = -1; scene.add(carModel);
         
-        // --- NEW RESPONSIVE GSAP TIMELINE ---
         let mm = gsap.matchMedia();
 
-        // DESKTOP CAMERA ANGLES
-        mm.add("(min-width: 769px)", () => {
+        mm.add("(min-width: 901px)", () => {
             const tl = gsap.timeline({ scrollTrigger: { trigger: ".scroll-content", start: "top top", end: "bottom bottom", scrub: 1.5 } });
             tl.to(camera.position, { x: 5, y: 1.5, z: 5 }, "hero")
               .to(camera.position, { x: -4, y: 1.2, z: 4 }, "about")
@@ -136,10 +161,8 @@ function init3D() {
               .to(camera.position, { x: 0, y: 6, z: 12 }, "gallery");
         });
 
-        // MOBILE CAMERA ANGLES (Pushed back so the car fits on narrow screens)
-        mm.add("(max-width: 768px)", () => {
+        mm.add("(max-width: 900px)", () => {
             const tl = gsap.timeline({ scrollTrigger: { trigger: ".scroll-content", start: "top top", end: "bottom bottom", scrub: 1.5 } });
-            // Notice the 'z' values are much higher to fit portrait aspect ratio
             tl.to(camera.position, { x: 0, y: 2.5, z: 9 }, "hero") 
               .to(camera.position, { x: 0, y: 4, z: 8 }, "about") 
               .to(camera.position, { x: 0, y: 1.5, z: 7 }, "services") 
@@ -147,7 +170,6 @@ function init3D() {
               .to(camera.position, { x: 0, y: 8, z: 18 }, "gallery");
         });
 
-        // Fade in UI cards universally
         gsap.utils.toArray('.reveal').forEach(el => {
             gsap.to(el, { scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }, opacity: 1, y: 0, duration: 1.5, ease: "power4.out" });
         });
