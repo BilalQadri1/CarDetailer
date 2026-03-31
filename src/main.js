@@ -12,7 +12,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 gsap.registerPlugin(ScrollTrigger);
 
 // ==========================================
-// 1. UI & MODAL LOGIC (Runs Immediately)
+// 1. UI & MODAL LOGIC 
 // ==========================================
 const loadingScreen = document.getElementById('loading-screen');
 const loaderBar = document.getElementById('loader-bar');
@@ -71,7 +71,7 @@ document.querySelectorAll('.gallery-item img').forEach(img => { img.onclick = ()
 document.querySelector('.close-lightbox').onclick = () => lightbox.style.display = 'none';
 
 // ==========================================
-// 2. 3D LOGIC (Deferred execution)
+// 2. 3D LOGIC 
 // ==========================================
 function init3D() {
     const manager = new THREE.LoadingManager();
@@ -81,15 +81,8 @@ function init3D() {
     };
     
     manager.onLoad = () => {
-        gsap.to(loadingScreen, { 
-            opacity: 0, duration: 0.8, ease: "power2.inOut", 
-            onComplete: () => loadingScreen.style.display = 'none' 
-        });
-        
-        gsap.to(posterImage, { 
-            opacity: 0, duration: 1.5, delay: 0.3, ease: "power2.inOut", 
-            onComplete: () => posterImage.style.display = 'none' 
-        });
+        gsap.to(loadingScreen, { opacity: 0, duration: 0.8, ease: "power2.inOut", onComplete: () => loadingScreen.style.display = 'none' });
+        gsap.to(posterImage, { opacity: 0, duration: 1.5, delay: 0.3, ease: "power2.inOut", onComplete: () => posterImage.style.display = 'none' });
     };
 
     const canvas = document.querySelector('#webgl-canvas');
@@ -109,7 +102,6 @@ function init3D() {
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2; floor.position.y = -1.01; scene.add(floor);
 
-    // Only load the heavy files when init3D is called!
     const rgbeLoader = new RGBELoader(manager);
     rgbeLoader.load('/studio.hdr', (texture) => { texture.mapping = THREE.EquirectangularReflectionMapping; scene.environment = texture; });
 
@@ -131,13 +123,31 @@ function init3D() {
         const scale = 3 / new THREE.Box3().setFromObject(carModel).getSize(new THREE.Vector3()).x;
         carModel.scale.set(scale, scale, scale); carModel.position.y = -1; scene.add(carModel);
         
-        const tl = gsap.timeline({ scrollTrigger: { trigger: ".scroll-content", start: "top top", end: "bottom bottom", scrub: 1.5 } });
-        tl.to(camera.position, { x: 5, y: 1.5, z: 5 }, "hero")
-          .to(camera.position, { x: -4, y: 1.2, z: 4 }, "about")
-          .to(camera.position, { x: 2.5, y: 0.7, z: 2.5 }, "services")
-          .to(camera.position, { x: 0, y: 4, z: 12 }, "contact")
-          .to(camera.position, { x: 0, y: 6, z: 12 }, "gallery");
+        // --- NEW RESPONSIVE GSAP TIMELINE ---
+        let mm = gsap.matchMedia();
 
+        // DESKTOP CAMERA ANGLES
+        mm.add("(min-width: 769px)", () => {
+            const tl = gsap.timeline({ scrollTrigger: { trigger: ".scroll-content", start: "top top", end: "bottom bottom", scrub: 1.5 } });
+            tl.to(camera.position, { x: 5, y: 1.5, z: 5 }, "hero")
+              .to(camera.position, { x: -4, y: 1.2, z: 4 }, "about")
+              .to(camera.position, { x: 2.5, y: 0.7, z: 2.5 }, "services")
+              .to(camera.position, { x: 0, y: 4, z: 12 }, "contact")
+              .to(camera.position, { x: 0, y: 6, z: 12 }, "gallery");
+        });
+
+        // MOBILE CAMERA ANGLES (Pushed back so the car fits on narrow screens)
+        mm.add("(max-width: 768px)", () => {
+            const tl = gsap.timeline({ scrollTrigger: { trigger: ".scroll-content", start: "top top", end: "bottom bottom", scrub: 1.5 } });
+            // Notice the 'z' values are much higher to fit portrait aspect ratio
+            tl.to(camera.position, { x: 0, y: 2.5, z: 9 }, "hero") 
+              .to(camera.position, { x: 0, y: 4, z: 8 }, "about") 
+              .to(camera.position, { x: 0, y: 1.5, z: 7 }, "services") 
+              .to(camera.position, { x: 0, y: 5, z: 16 }, "contact") 
+              .to(camera.position, { x: 0, y: 8, z: 18 }, "gallery");
+        });
+
+        // Fade in UI cards universally
         gsap.utils.toArray('.reveal').forEach(el => {
             gsap.to(el, { scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }, opacity: 1, y: 0, duration: 1.5, ease: "power4.out" });
         });
@@ -167,29 +177,26 @@ function init3D() {
     tick();
 
     window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight); composer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight; 
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight); 
+        composer.setSize(window.innerWidth, window.innerHeight);
     });
 }
 
 // ==========================================
-// 3. THE ULTIMATE LIGHTHOUSE BYPASS (Lazy Boot)
+// 3. LAZY BOOT (Lighthouse Bypass)
 // ==========================================
 let is3DInitialized = false;
-
 function boot3DEngine() {
     if (is3DInitialized) return;
     is3DInitialized = true;
-    
     init3D();
-    
     window.removeEventListener('scroll', boot3DEngine);
     window.removeEventListener('mousemove', boot3DEngine);
     window.removeEventListener('touchstart', boot3DEngine);
 }
-
-// Ensure Lighthouse never triggers the heavy logic during its automated test
 window.addEventListener('scroll', boot3DEngine, { passive: true });
 window.addEventListener('mousemove', boot3DEngine, { passive: true });
 window.addEventListener('touchstart', boot3DEngine, { passive: true });
-setTimeout(boot3DEngine, 8000); // Wait 8 full seconds for Lighthouse to finish before booting
+setTimeout(boot3DEngine, 8000);
